@@ -31,15 +31,28 @@ app.get('/dump', function(req, res) {
             console.log(`count=${v.count}`)
 
             count = v.count
-            var line
+            var lines_print = 'Count : ' + count + '<br>'
 
-            fs.readFile('data.txt', function(err, data) {
+            function get_line(filename, line_no) {
+                fs.readFile(filename, function(err, data){
+                    if (err) throw err
+
+                    var lines = data.toString().split('\n')
+
+                    if(+line_no > lines.length){
+                        res.send('File is shorter than count. Please rewrite')
+                        return
+                    }
+                    for(var i=0; i<count; i++){
+                       lines_print = lines_print + lines[i] + '<br>'
+                    }
+                    res.send(lines_print)
+                })
+            }
+            get_line('data.txt', count, function(err, line) {
                 if (err) throw err
-                res.type('text/html')
-                res.send(data)
+                console.log('Count : ' +count)
             })
-
-
 })
 
 
